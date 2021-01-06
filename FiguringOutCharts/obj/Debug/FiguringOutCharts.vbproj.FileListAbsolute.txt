@@ -30,3 +30,23 @@ C:\Users\Jasper\Documents\Godalming College\Computer Science\NEA\FiguringOutChar
 C:\Users\Jasper\Documents\Godalming College\Computer Science\NEA\FiguringOutCharts\FiguringOutCharts\obj\Debug\FiguringOutCharts.vbproj.CopyComplete
 C:\Users\Jasper\Documents\Godalming College\Computer Science\NEA\FiguringOutCharts\FiguringOutCharts\obj\Debug\FiguringOutCharts.Sim.resources
 C:\Users\Jasper\Documents\Godalming College\Computer Science\NEA\FiguringOutCharts\FiguringOutCharts\obj\Debug\FiguringOutCharts.SimCreator.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\FiguringOutCharts.exe.config
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\FiguringOutCharts.exe
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\FiguringOutCharts.pdb
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\FiguringOutCharts.xml
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\Microsoft.VisualBasic.PowerPacks.dll
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\Microsoft.VisualBasic.PowerPacks.xml
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.vbprojAssemblyReference.cache
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.ChooseStartingIsotopes.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.DesignCupboard.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.MainMenu.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.Resources.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.StartUpMenu.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.Sim.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.SimCreator.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.vbproj.GenerateResource.cache
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.vbproj.CoreCompileInputs.cache
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.vbproj.CopyComplete
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.exe
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.xml
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.pdb
