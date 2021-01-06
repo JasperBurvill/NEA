@@ -141,7 +141,7 @@ End Class
 
 
 Class Isotope
-    Protected NumberOfNuclei As Integer
+    Protected NumberOfNuclei As Double
     Protected DecayedNuclei As Integer
     Protected HalfLife As Double
     Protected AtomicNumber As Integer
