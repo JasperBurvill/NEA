@@ -3,9 +3,8 @@ Class Sim
     Private AlphaIsotopes As New List(Of Alpha)
     Private BetaIsotopes As New List(Of Beta)
     Private PresentIsotopes As New List(Of Isotope)
+    Private StartingIsotopes As New List(Of Isotope)
     Private CurrentTime As Integer
-    Private StartingAlpha As New List(Of Alpha)
-    Private StartingBeta As New List(Of Beta)
     Private Sub BarChartButton_Click(sender As Object, e As EventArgs) Handles BarChartButton.Click
         BarChartButton.Hide()
         PieChartButton.Hide()
@@ -49,7 +48,6 @@ Class Sim
 
     Private Sub EnterTimeButton_Click(sender As Object, e As EventArgs) Handles EnterTimeButton.Click
         ProgressSim(InputBox("Enter the time that you would like to go to"))
-        If DecayCurve.Visible = False Then UpdateChart()
     End Sub
 
     Public Sub UpdateChart()
@@ -65,15 +63,21 @@ Class Sim
                 PieChart.Series(0).Points.Add(PresentIsotopes(i).GetNumberOfNuclei)
                 PieChart.Series(0).Points(i).LegendText = GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0)
             Next
+        ElseIf DecayCurve.Visible = True Then '=======================================================================
+            Dim NumberOfNuclei As Integer
+            Dim Time As Integer
+            DecayCurve.Series.Clear()
+            For i = 0 To PresentIsotopes.Count - 1
+                NumberOfNuclei = PresentIsotopes(i).GetNumberOfNuclei
+                Time = 0
+                DecayCurve.Series.Add(GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0))
+                Do
+                    DecayCurve.Series(i).Points.AddXY(Time, NumberOfNuclei)
+                    NumberOfNuclei -= Math.Round(NumberOfNuclei * (Math.E ^ -(Math.Log(2) / PresentIsotopes(i).GetHalfLife)))
+                    Time += 1
+                Loop Until NumberOfNuclei <= 10
+            Next
         End If
-    End Sub
-
-    Public Sub UpdateCurve(Time)
-        CreatePresentIsotopes()
-        For i = 0 To PresentIsotopes.Count - 1
-            DecayCurve.Series.Add(GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0))
-            DecayCurve.Series(i).Points.AddXY(Time, PresentIsotopes(i).GetNumberOfNuclei)
-        Next
     End Sub
 
     Public Sub ProgressSim(Time As Integer)
@@ -90,9 +94,9 @@ Class Sim
                     BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes)
                 End If
             Next
-            If DecayCurve.Visible = True Then UpdateCurve(i)
         Next
         CreatePresentIsotopes()
+        UpdateChart()
         CurrentTime = Time
     End Sub
     Public Function GetIsotopeData(AtomicNumber, AtomicMass, Index)
@@ -122,16 +126,19 @@ Class Sim
         Next
     End Sub
     Public Sub ResetIsotopes()
-        AlphaIsotopes = StartingAlpha
-        BetaIsotopes = StartingBeta
+        AlphaIsotopes.Clear()
+        BetaIsotopes.Clear()
+        For i = 0 To StartingIsotopes.Count - 1
+            AlphaIsotopes.Add(New Alpha(Math.Round(StartingIsotopes(i).GetNumberOfNuclei * GetIsotopeData(StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, 1)), StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, GetIsotopeData(StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, 2)))
+            BetaIsotopes.Add(New Beta(Math.Round(StartingIsotopes(i).GetNumberOfNuclei * (1 - GetIsotopeData(StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, 1))), StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, GetIsotopeData(StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, 2)))
+        Next
         CreatePresentIsotopes()
     End Sub
     Public Sub SetStartingIsotope(AtomicNumber, AtomicMass, StartingNumberOfNuclei)
         AlphaIsotopes.Add(New Alpha(Math.Round(StartingNumberOfNuclei * GetIsotopeData(AtomicNumber, AtomicMass, 1)), AtomicNumber, AtomicMass, GetIsotopeData(AtomicNumber, AtomicMass, 2)))
         BetaIsotopes.Add(New Beta(Math.Round(StartingNumberOfNuclei * (1 - GetIsotopeData(AtomicNumber, AtomicMass, 1))), AtomicNumber, AtomicMass, GetIsotopeData(AtomicNumber, AtomicMass, 2)))
         PresentIsotopes.Add(New Isotope(StartingNumberOfNuclei, AtomicNumber, AtomicMass, GetIsotopeData(AtomicNumber, AtomicMass, 2)))
-        StartingAlpha = AlphaIsotopes
-        StartingBeta = BetaIsotopes
+        StartingIsotopes.Add(New Isotope(StartingNumberOfNuclei, AtomicNumber, AtomicMass, GetIsotopeData(AtomicNumber, AtomicMass, 2)))
     End Sub
 
 End Class
