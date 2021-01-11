@@ -1,7 +1,7 @@
 ﻿
 Class Sim
-    Property AlphaIsotopes As New List(Of Alpha)
-    Property BetaIsotopes As New List(Of Beta)
+    Private AlphaIsotopes As New List(Of Alpha)
+    Private BetaIsotopes As New List(Of Beta)
     Private PresentIsotopes As New List(Of Isotope)
     Private CurrentTime As Integer
     Private StartingAlpha As New List(Of Alpha)
@@ -86,11 +86,11 @@ Class Sim
         For i = 1 To Time
             For j = AlphaIsotopes.Count - 1 To 0 Step -1
                 If AlphaIsotopes(j).GetHalfLife <> 0 Then 'Im representing a stable isotope as having a half-life of 0
-                    AlphaIsotopes(j).Decay()
-                    BetaIsotopes(j).Decay()
+                    AlphaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes)
+                    BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes)
                 End If
             Next
-            ' If Sim.DecayCurve.Visible = True Then UpdateCurve(i)
+            If DecayCurve.Visible = True Then UpdateCurve(i)
         Next
         CreatePresentIsotopes()
         CurrentTime = Time
@@ -124,10 +124,7 @@ Class Sim
     Public Sub ResetIsotopes()
         AlphaIsotopes = StartingAlpha
         BetaIsotopes = StartingBeta
-        PresentIsotopes.Clear()
-        For i = 0 To StartingAlpha.Count - 1
-            PresentIsotopes.Add(New Isotope(AlphaIsotopes(i).GetNumberOfNuclei + BetaIsotopes(i).GetNumberOfNuclei, AlphaIsotopes(i).GetAtomicNumber, AlphaIsotopes(i).GetAtomicMass, AlphaIsotopes(i).GetHalfLife))
-        Next
+        CreatePresentIsotopes()
     End Sub
     Public Sub SetStartingIsotope(AtomicNumber, AtomicMass, StartingNumberOfNuclei)
         AlphaIsotopes.Add(New Alpha(Math.Round(StartingNumberOfNuclei * GetIsotopeData(AtomicNumber, AtomicMass, 1)), AtomicNumber, AtomicMass, GetIsotopeData(AtomicNumber, AtomicMass, 2)))
@@ -153,7 +150,7 @@ Class Isotope
         Me.AtomicMass = AtomicMass
         Me.HalfLife = HalfLife
     End Sub
-    Public Overridable Sub Decay()
+    Public Overridable Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
         DecayedNuclei = NumberOfNuclei - Math.Round(NumberOfNuclei * (Math.E ^ -(Math.Log(2) / HalfLife)))
         NumberOfNuclei = NumberOfNuclei - DecayedNuclei
     End Sub
@@ -166,10 +163,10 @@ Class Isotope
         Return Sim.GetIsotopeData(AtomicNumber, AtomicMass, 2)
     End Function
 
-    Public Function CheckIfIsotopePresent(AtomicNumber, AtomicMass)
+    Public Function CheckIfIsotopePresent(AtomicNumber As Integer, AtomicMass As Integer, ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
         Dim IsotopeIndex As Integer = -1
-        For i = 0 To Sim.AlphaIsotopes.Count - 1 'Only need to check alpha isotopes as if it is in alpha then it will also be in beta, even if it has NumberOfNuclei = 0
-            If Sim.AlphaIsotopes(i).GetAtomicNumber = AtomicNumber And Sim.AlphaIsotopes(i).GetAtomicMass = AtomicMass Then
+        For i = 0 To AlphaIsotopes.Count - 1 'Only need to check alpha isotopes as if it is in alpha then it will also be in beta, even if it has NumberOfNuclei = 0
+            If AlphaIsotopes(i).GetAtomicNumber = AtomicNumber And AlphaIsotopes(i).GetAtomicMass = AtomicMass Then
                 IsotopeIndex = i
             End If
         Next
@@ -204,14 +201,14 @@ Class Alpha
         MyBase.New(NumberOfNuclei, AtomicNumber, AtomicMass, HalfLife)
     End Sub
 
-    Public Overrides Sub Decay()
-        MyBase.Decay()
-        If CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4) >= 0 Then
-            Sim.AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4))
-            Sim.BetaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)))
+    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
+        MyBase.Decay(AlphaIsotopes, BetaIsotopes)
+        If CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes) >= 0 Then
+            AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4))
+            BetaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)))
         Else
-            Sim.AlphaIsotopes.Add(New Alpha(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4), AtomicNumber - 2, AtomicMass - 4, GetNewHalfLife(AtomicNumber - 2, AtomicMass - 4)))
-            Sim.BetaIsotopes.Add(New Beta(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)), AtomicNumber - 2, AtomicMass - 4, GetNewHalfLife(AtomicNumber - 2, AtomicMass - 4)))
+            AlphaIsotopes.Add(New Alpha(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4), AtomicNumber - 2, AtomicMass - 4, GetNewHalfLife(AtomicNumber - 2, AtomicMass - 4)))
+            BetaIsotopes.Add(New Beta(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)), AtomicNumber - 2, AtomicMass - 4, GetNewHalfLife(AtomicNumber - 2, AtomicMass - 4)))
         End If
     End Sub
 End Class
@@ -221,14 +218,14 @@ Class Beta
     Public Sub New(ByVal NumberOfNuclei As Integer, ByVal AtomicNumber As Integer, ByVal AtomicMass As Integer, ByVal HalfLife As Double)
         MyBase.New(NumberOfNuclei, AtomicNumber, AtomicMass, HalfLife)
     End Sub
-    Public Overrides Sub Decay()
-        MyBase.Decay()
-        If CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass) >= 0 Then
-            Sim.AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass))
-            Sim.BetaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)))
+    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
+        MyBase.Decay(AlphaIsotopes, BetaIsotopes)
+        If CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes) >= 0 Then
+            AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass))
+            BetaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)))
         Else
-            Sim.AlphaIsotopes.Add(New Alpha(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass), AtomicNumber + 1, AtomicMass, GetNewHalfLife(AtomicNumber + 1, AtomicMass)))
-            Sim.BetaIsotopes.Add(New Beta(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)), AtomicNumber + 1, AtomicMass, GetNewHalfLife(AtomicNumber + 1, AtomicMass)))
+            AlphaIsotopes.Add(New Alpha(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass), AtomicNumber + 1, AtomicMass, GetNewHalfLife(AtomicNumber + 1, AtomicMass)))
+            BetaIsotopes.Add(New Beta(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)), AtomicNumber + 1, AtomicMass, GetNewHalfLife(AtomicNumber + 1, AtomicMass)))
         End If
     End Sub
 End Class
