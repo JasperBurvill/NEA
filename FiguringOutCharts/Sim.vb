@@ -1,9 +1,12 @@
 ﻿
+Imports System.Windows.Forms.DataVisualization.Charting
+
 Class Sim
     Private AlphaIsotopes As New List(Of Alpha)
     Private BetaIsotopes As New List(Of Beta)
     Private PresentIsotopes As New List(Of Isotope)
     Private StartingIsotopes As New List(Of Isotope)
+    Private IsotopesOnCurve As New List(Of String)
     Private CurrentTime As Integer
     Private Sub BarChartButton_Click(sender As Object, e As EventArgs) Handles BarChartButton.Click
         BarChartButton.Hide()
@@ -30,9 +33,10 @@ Class Sim
         PieChartButton.Hide()
         DecayCurveButton.Hide()
         DecayCurve.Show()
+        DecayCurve.Series.Clear()
         EnterTimeButton.Show()
         ReturnToSimMenu.Show()
-        UpdateChart()
+        ProgressSim(900)
     End Sub
 
     Private Sub ReturnToSimMenu_Click(sender As Object, e As EventArgs) Handles ReturnToSimMenu.Click
@@ -65,21 +69,44 @@ Class Sim
             Next
         ElseIf DecayCurve.Visible = True Then '=======================================================================
             Dim NumberOfNuclei As Integer
-            Dim Time As Integer
-            DecayCurve.Series.Clear()
             For i = 0 To PresentIsotopes.Count - 1
                 NumberOfNuclei = PresentIsotopes(i).GetNumberOfNuclei
-                Time = 0
-                DecayCurve.Series.Add(GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0))
-                Do
-                    DecayCurve.Series(i).Points.AddXY(Time, NumberOfNuclei)
-                    NumberOfNuclei -= Math.Round(NumberOfNuclei * (Math.E ^ -(Math.Log(2) / PresentIsotopes(i).GetHalfLife)))
-                    Time += 1
-                Loop Until NumberOfNuclei <= 10
+                If CheckIfIsotopeIsOnCurve(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, IsotopesOnCurve) Then
+                    DecayCurve.Series(i).Points.AddY(NumberOfNuclei)
+                Else
+                    DecayCurve.Series.Add(GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0))
+                    IsotopesOnCurve.Add(GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0))
+                    DecayCurve.Series(i).ChartType = SeriesChartType.Spline
+                    DecayCurve.Series(i).BorderWidth = 4
+                    DecayCurve.Series(i).Points.AddY(NumberOfNuclei)
+                End If
             Next
         End If
     End Sub
 
+
+    Public Function CheckIfIsotopeIsOnCurve(AtomicNumber, AtomicMass, IsotopesOnCurve)
+        For i = 0 To IsotopesOnCurve.Count - 1
+            If IsotopesOnCurve(i) = GetIsotopeData(AtomicNumber, AtomicMass, 0) Then
+                Return True
+            End If
+        Next
+        Return False
+    End Function
+
+    Public Function CheckIfAllIsotopesDecayed()
+        Dim IsotopesDecayed As Integer = 0
+        For i = 1 To PresentIsotopes.Count - 1
+            If PresentIsotopes(i).GetNumberOfNuclei <= 10000 Or PresentIsotopes(i).GetHalfLife = 0 Then
+                IsotopesDecayed = IsotopesDecayed + 1
+            End If
+        Next
+        If IsotopesDecayed = PresentIsotopes.Count Then
+            Return True
+        Else
+            Return False
+        End If
+    End Function
     Public Sub ProgressSim(Time As Integer)
 
         If Time >= CurrentTime Then
@@ -94,9 +121,10 @@ Class Sim
                     BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes)
                 End If
             Next
+            CreatePresentIsotopes()
+            If DecayCurve.Visible = True Then UpdateChart()
         Next
-        CreatePresentIsotopes()
-        UpdateChart()
+        If DecayCurve.Visible = False Then UpdateChart()
         CurrentTime = Time
     End Sub
     Public Function GetIsotopeData(AtomicNumber, AtomicMass, Index)

@@ -184,6 +184,8 @@ Partial Class Sim
         '
         Me.DecayCurve.BackColor = System.Drawing.Color.Yellow
         Me.DecayCurve.BorderlineColor = System.Drawing.Color.Yellow
+        ChartArea3.AxisX.Title = "Time"
+        ChartArea3.AxisY.Title = "Number Of Nuclei"
         ChartArea3.BackColor = System.Drawing.Color.Yellow
         ChartArea3.Name = "ChartArea1"
         Me.DecayCurve.ChartAreas.Add(ChartArea3)
@@ -193,14 +195,20 @@ Partial Class Sim
         Me.DecayCurve.Location = New System.Drawing.Point(465, 122)
         Me.DecayCurve.Name = "DecayCurve"
         Me.DecayCurve.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None
-        Me.DecayCurve.PaletteCustomColors = New System.Drawing.Color() {System.Drawing.Color.LimeGreen, System.Drawing.Color.Red, System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer))}
+        Me.DecayCurve.PaletteCustomColors = New System.Drawing.Color() {System.Drawing.Color.LimeGreen, System.Drawing.Color.Red, System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer)), System.Drawing.Color.Fuchsia, System.Drawing.Color.Aqua, System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))}
         Series3.BorderWidth = 4
         Series3.ChartArea = "ChartArea1"
         Series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline
         Series3.LabelBackColor = System.Drawing.Color.Yellow
         Series3.LabelBorderWidth = 5
         Series3.Legend = "Legend1"
+        Series3.MarkerSize = 2
         Series3.Name = "Series1"
+        DataPoint2.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint3.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint4.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint5.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint6.LabelBackColor = System.Drawing.Color.Yellow
         Series3.Points.Add(DataPoint2)
         Series3.Points.Add(DataPoint3)
         Series3.Points.Add(DataPoint4)
@@ -287,9 +295,9 @@ Partial Class Sim
         Me.Controls.Add(Me.DecayCurveButton)
         Me.Controls.Add(Me.PieChartButton)
         Me.Controls.Add(Me.BarChartButton)
+        Me.Controls.Add(Me.DecayCurve)
         Me.Controls.Add(Me.PieChart)
         Me.Controls.Add(Me.BarChart)
-        Me.Controls.Add(Me.DecayCurve)
         Me.Font = New System.Drawing.Font("Comic Sans MS", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Name = "Sim"
         Me.Text = "Sim"
