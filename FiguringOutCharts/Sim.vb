@@ -1,12 +1,12 @@
 ﻿
 Imports System.Windows.Forms.DataVisualization.Charting
-
 Class Sim
     Private AlphaIsotopes As New List(Of Alpha)
     Private BetaIsotopes As New List(Of Beta)
     Private PresentIsotopes As New List(Of Isotope)
     Private StartingIsotopes As New List(Of Isotope)
     Private IsotopesOnCurve As New List(Of String)
+    Private TimeInterval As Double
     Private CurrentTime As Integer
     Private Sub BarChartButton_Click(sender As Object, e As EventArgs) Handles BarChartButton.Click
         BarChartButton.Hide()
@@ -32,11 +32,12 @@ Class Sim
         BarChartButton.Hide()
         PieChartButton.Hide()
         DecayCurveButton.Hide()
+        DecayCurve.ChartAreas(0).Axes(0).Title = ("Time/" & TimeInterval & " seconds")
         DecayCurve.Show()
         DecayCurve.Series.Clear()
         EnterTimeButton.Show()
         ReturnToSimMenu.Show()
-        ProgressSim(900)
+        ProgressSim(150)
     End Sub
 
     Private Sub ReturnToSimMenu_Click(sender As Object, e As EventArgs) Handles ReturnToSimMenu.Click
@@ -71,7 +72,7 @@ Class Sim
             Dim NumberOfNuclei As Integer
             For i = 0 To PresentIsotopes.Count - 1
                 NumberOfNuclei = PresentIsotopes(i).GetNumberOfNuclei
-                If CheckIfIsotopeIsOnCurve(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, IsotopesOnCurve) Then
+                If CheckIfIsotopeIsOnCurve(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass) Then
                     DecayCurve.Series(i).Points.AddY(NumberOfNuclei)
                 Else
                     DecayCurve.Series.Add(GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0))
@@ -81,13 +82,14 @@ Class Sim
                     DecayCurve.Series(i).Points.AddY(NumberOfNuclei)
                 End If
             Next
+
         End If
     End Sub
 
 
-    Public Function CheckIfIsotopeIsOnCurve(AtomicNumber, AtomicMass, IsotopesOnCurve)
-        For i = 0 To IsotopesOnCurve.Count - 1
-            If IsotopesOnCurve(i) = GetIsotopeData(AtomicNumber, AtomicMass, 0) Then
+    Public Function CheckIfIsotopeIsOnCurve(AtomicNumber, AtomicMass)
+        For i = 0 To DecayCurve.Series.Count - 1
+            If DecayCurve.Series(i).Name = GetIsotopeData(AtomicNumber, AtomicMass, 0) Then
                 Return True
             End If
         Next
@@ -117,8 +119,8 @@ Class Sim
         For i = 1 To Time
             For j = AlphaIsotopes.Count - 1 To 0 Step -1
                 If AlphaIsotopes(j).GetHalfLife <> 0 Then 'Im representing a stable isotope as having a half-life of 0
-                    AlphaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes)
-                    BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes)
+                    AlphaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
+                    BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
                 End If
             Next
             CreatePresentIsotopes()
@@ -142,13 +144,18 @@ Class Sim
                     MsgBox("Line " & ex.Message & "is not valid and will be skipped.")
                 End Try
             End While
+            Return 0
         End Using
     End Function
 
+    Public Function IsIsotopeReal(AtomicNumber, AtomicMass)
+        If GetIsotopeData(AtomicNumber, AtomicMass, 3) = 0 Then Return False
+        Return True
+    End Function
     Public Sub CreatePresentIsotopes()
         PresentIsotopes.Clear()
         For i = 0 To AlphaIsotopes.Count - 1
-            If AlphaIsotopes(i).GetNumberOfNuclei + BetaIsotopes(i).GetNumberOfNuclei <> 0 Then
+            If IsIsotopeReal(AlphaIsotopes(i).GetAtomicNumber, AlphaIsotopes(i).GetAtomicMass) <> 0 Then
                 PresentIsotopes.Add(New Isotope(AlphaIsotopes(i).GetNumberOfNuclei + BetaIsotopes(i).GetNumberOfNuclei, AlphaIsotopes(i).GetAtomicNumber, AlphaIsotopes(i).GetAtomicMass, AlphaIsotopes(i).GetHalfLife))
             End If
         Next
@@ -169,6 +176,16 @@ Class Sim
         StartingIsotopes.Add(New Isotope(StartingNumberOfNuclei, AtomicNumber, AtomicMass, GetIsotopeData(AtomicNumber, AtomicMass, 2)))
     End Sub
 
+    Public Sub SetTimeInterval(AtomicNumber, AtomicMass)
+        Dim HalfLife As Double
+        TimeInterval = 1
+        HalfLife = GetIsotopeData(AtomicNumber, AtomicMass, 2)
+        Do
+            HalfLife = HalfLife / 10
+            TimeInterval = TimeInterval * 10
+        Loop Until HalfLife <= 100
+    End Sub
+
 End Class
 
 
@@ -185,8 +202,8 @@ Class Isotope
         Me.AtomicMass = AtomicMass
         Me.HalfLife = HalfLife
     End Sub
-    Public Overridable Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
-        DecayedNuclei = NumberOfNuclei - Math.Round(NumberOfNuclei * (Math.E ^ -(Math.Log(2) / HalfLife)))
+    Public Overridable Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double)
+        DecayedNuclei = NumberOfNuclei - Math.Round(NumberOfNuclei * (Math.E ^ (-(Math.Log(2) / HalfLife) * TimeInterval)))
         NumberOfNuclei = NumberOfNuclei - DecayedNuclei
     End Sub
 
@@ -236,8 +253,8 @@ Class Alpha
         MyBase.New(NumberOfNuclei, AtomicNumber, AtomicMass, HalfLife)
     End Sub
 
-    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
-        MyBase.Decay(AlphaIsotopes, BetaIsotopes)
+    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double)
+        MyBase.Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
         If CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes) >= 0 Then
             AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4))
             BetaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)))
@@ -253,8 +270,8 @@ Class Beta
     Public Sub New(ByVal NumberOfNuclei As Integer, ByVal AtomicNumber As Integer, ByVal AtomicMass As Integer, ByVal HalfLife As Double)
         MyBase.New(NumberOfNuclei, AtomicNumber, AtomicMass, HalfLife)
     End Sub
-    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
-        MyBase.Decay(AlphaIsotopes, BetaIsotopes)
+    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double)
+        MyBase.Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
         If CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes) >= 0 Then
             AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass))
             BetaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)))

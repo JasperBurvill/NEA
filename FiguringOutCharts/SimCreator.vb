@@ -22,6 +22,9 @@
     End Sub
 
     Public Sub SetStartingIsotope(AtomicNumber, AtomicMass, StartingNumberOfNuclei)
+        If ChooseStartingIsotope.Text = "Choose Starting Isotope" Then
+            SimDisplay.SetTimeInterval(AtomicNumber, AtomicMass)
+        End If
         SimDisplay.SetStartingIsotope(AtomicNumber, AtomicMass, StartingNumberOfNuclei)
     End Sub
 
