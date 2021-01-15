@@ -1,5 +1,7 @@
 ﻿
 Imports System.Windows.Forms.DataVisualization.Charting
+Imports System.Threading
+
 Class Sim
     Private AlphaIsotopes As New List(Of Alpha)
     Private BetaIsotopes As New List(Of Beta)
@@ -32,12 +34,14 @@ Class Sim
         BarChartButton.Hide()
         PieChartButton.Hide()
         DecayCurveButton.Hide()
-        DecayCurve.ChartAreas(0).Axes(0).Title = ("Time/" & TimeInterval & " seconds")
         DecayCurve.Show()
+        DecayCurve.ChartAreas(0).Axes(0).Title = ("Time/" & TimeInterval & " seconds")
         DecayCurve.Series.Clear()
-        EnterTimeButton.Show()
+        UpdateChart()
         ReturnToSimMenu.Show()
         ProgressSim(150)
+        ResetIsotopes()
+        CurrentTime = 0
     End Sub
 
     Private Sub ReturnToSimMenu_Click(sender As Object, e As EventArgs) Handles ReturnToSimMenu.Click
@@ -52,7 +56,8 @@ Class Sim
     End Sub
 
     Private Sub EnterTimeButton_Click(sender As Object, e As EventArgs) Handles EnterTimeButton.Click
-        ProgressSim(InputBox("Enter the time that you would like to go to"))
+        ProgressSim(InputBox("Enter the time that you would like to go to (in " & TimeInterval & "s of seconds)"))
+
     End Sub
 
     Public Sub UpdateChart()
@@ -109,8 +114,8 @@ Class Sim
             Return False
         End If
     End Function
-    Public Sub ProgressSim(Time As Integer)
 
+    Public Sub ProgressSim(Time As Integer)
         If Time >= CurrentTime Then
             Time = Time - CurrentTime
         Else
@@ -129,6 +134,7 @@ Class Sim
         If DecayCurve.Visible = False Then UpdateChart()
         CurrentTime = Time
     End Sub
+
     Public Function GetIsotopeData(AtomicNumber, AtomicMass, Index)
         Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser("Isotopes.txt")
             MyReader.TextFieldType = FileIO.FieldType.Delimited

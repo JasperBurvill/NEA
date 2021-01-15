@@ -41,7 +41,7 @@ Public Class ChooseStartingIsotopes
                 End Try
             End While
         End Using
-        Select Case MsgBox("Are you sure that you would like to start with " & FullIsotope & "? It has an atomic number of " & AtomicNumber & ", an atomic mass of " & AtomicMass & ", and a half-life of " & HalfLife & ".", vbYesNo,)
+        Select Case MsgBox("Are you sure that you would like to start with " & FullIsotope & "? It has an atomic number of " & AtomicNumber & ", an atomic mass of " & AtomicMass & ", and a half-life of " & HalfLife & "s.", vbYesNo,)
             Case vbYes
                 StartingNumber = InputBox("How many nuclei of this isotope would you like to start with?")
                 SimCreator.SetStartingIsotope(AtomicNumber, AtomicMass, StartingNumber)

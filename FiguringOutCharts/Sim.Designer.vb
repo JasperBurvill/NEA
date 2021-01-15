@@ -22,21 +22,21 @@ Partial Class Sim
     'Do not modify it using the code editor.
     <System.Diagnostics.DebuggerStepThrough()>
     Private Sub InitializeComponent()
-        Dim ChartArea1 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend1 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series1 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim DataPoint1 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(4.0R, 5.0R)
-        Dim ChartArea2 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend2 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series2 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim ChartArea3 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
-        Dim Legend3 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
-        Dim Series3 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
-        Dim DataPoint2 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(0R, 100.0R)
-        Dim DataPoint3 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(1.0R, 50.0R)
-        Dim DataPoint4 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(2.0R, 25.0R)
-        Dim DataPoint5 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(3.0R, 12.5R)
-        Dim DataPoint6 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(6.25R, 4.0R)
+        Dim ChartArea4 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend4 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series4 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim DataPoint7 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(4.0R, 5.0R)
+        Dim ChartArea5 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend5 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series5 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim ChartArea6 As System.Windows.Forms.DataVisualization.Charting.ChartArea = New System.Windows.Forms.DataVisualization.Charting.ChartArea()
+        Dim Legend6 As System.Windows.Forms.DataVisualization.Charting.Legend = New System.Windows.Forms.DataVisualization.Charting.Legend()
+        Dim Series6 As System.Windows.Forms.DataVisualization.Charting.Series = New System.Windows.Forms.DataVisualization.Charting.Series()
+        Dim DataPoint8 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(0R, 100.0R)
+        Dim DataPoint9 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(1.0R, 50.0R)
+        Dim DataPoint10 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(2.0R, 25.0R)
+        Dim DataPoint11 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(3.0R, 12.5R)
+        Dim DataPoint12 As System.Windows.Forms.DataVisualization.Charting.DataPoint = New System.Windows.Forms.DataVisualization.Charting.DataPoint(6.25R, 4.0R)
         Me.DecayCurveButton = New System.Windows.Forms.Button()
         Me.PieChartButton = New System.Windows.Forms.Button()
         Me.BarChartButton = New System.Windows.Forms.Button()
@@ -49,6 +49,8 @@ Partial Class Sim
         Me.Button2 = New System.Windows.Forms.Button()
         Me.Button3 = New System.Windows.Forms.Button()
         Me.ReturnToSimMenu = New System.Windows.Forms.Button()
+        Me.Loading1 = New System.Windows.Forms.Label()
+        Me.Loading2 = New System.Windows.Forms.Label()
         CType(Me.BarChart, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PieChart, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DecayCurve, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -130,23 +132,25 @@ Partial Class Sim
         Me.BarChart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
         Me.BarChart.BorderlineColor = System.Drawing.Color.Black
         Me.BarChart.BorderSkin.PageColor = System.Drawing.Color.Yellow
-        ChartArea1.BackColor = System.Drawing.Color.Yellow
-        ChartArea1.Name = "ChartArea1"
-        Me.BarChart.ChartAreas.Add(ChartArea1)
-        Legend1.BackColor = System.Drawing.Color.Yellow
-        Legend1.BackSecondaryColor = System.Drawing.Color.Black
-        Legend1.Name = "Legend1"
-        Me.BarChart.Legends.Add(Legend1)
+        ChartArea4.AxisX.Title = "Isotope"
+        ChartArea4.AxisY.Title = "NumberOfNuclei"
+        ChartArea4.BackColor = System.Drawing.Color.Yellow
+        ChartArea4.Name = "ChartArea1"
+        Me.BarChart.ChartAreas.Add(ChartArea4)
+        Legend4.BackColor = System.Drawing.Color.Yellow
+        Legend4.BackSecondaryColor = System.Drawing.Color.Black
+        Legend4.Name = "Legend1"
+        Me.BarChart.Legends.Add(Legend4)
         Me.BarChart.Location = New System.Drawing.Point(482, 142)
         Me.BarChart.Name = "BarChart"
         Me.BarChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Bright
-        Series1.BackSecondaryColor = System.Drawing.Color.Yellow
-        Series1.ChartArea = "ChartArea1"
-        Series1.IsVisibleInLegend = False
-        Series1.Legend = "Legend1"
-        Series1.Name = "Isotope Series"
-        Series1.Points.Add(DataPoint1)
-        Me.BarChart.Series.Add(Series1)
+        Series4.BackSecondaryColor = System.Drawing.Color.Yellow
+        Series4.ChartArea = "ChartArea1"
+        Series4.IsVisibleInLegend = False
+        Series4.Legend = "Legend1"
+        Series4.Name = "Isotope Series"
+        Series4.Points.Add(DataPoint7)
+        Me.BarChart.Series.Add(Series4)
         Me.BarChart.Size = New System.Drawing.Size(517, 535)
         Me.BarChart.TabIndex = 18
         Me.BarChart.Text = "Bar Chart showing quantities of different isotopes at given time"
@@ -158,23 +162,23 @@ Partial Class Sim
         Me.PieChart.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
         Me.PieChart.BackImageTransparentColor = System.Drawing.Color.Yellow
         Me.PieChart.BackSecondaryColor = System.Drawing.Color.Yellow
-        ChartArea2.BackColor = System.Drawing.Color.Yellow
-        ChartArea2.Name = "ChartArea1"
-        Me.PieChart.ChartAreas.Add(ChartArea2)
-        Legend2.BackColor = System.Drawing.Color.Yellow
-        Legend2.Name = "Legend1"
-        Me.PieChart.Legends.Add(Legend2)
+        ChartArea5.BackColor = System.Drawing.Color.Yellow
+        ChartArea5.Name = "ChartArea1"
+        Me.PieChart.ChartAreas.Add(ChartArea5)
+        Legend5.BackColor = System.Drawing.Color.Yellow
+        Legend5.Name = "Legend1"
+        Me.PieChart.Legends.Add(Legend5)
         Me.PieChart.Location = New System.Drawing.Point(469, 122)
         Me.PieChart.Name = "PieChart"
         Me.PieChart.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None
         Me.PieChart.PaletteCustomColors = New System.Drawing.Color() {System.Drawing.Color.LimeGreen, System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer)), System.Drawing.Color.Red, System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer), CType(CType(192, Byte), Integer)), System.Drawing.Color.FromArgb(CType(CType(192, Byte), Integer), CType(CType(0, Byte), Integer), CType(CType(192, Byte), Integer)), System.Drawing.Color.FromArgb(CType(CType(0, Byte), Integer), CType(CType(64, Byte), Integer), CType(CType(0, Byte), Integer)), System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer)), System.Drawing.Color.Aqua}
-        Series2.ChartArea = "ChartArea1"
-        Series2.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie
-        Series2.LabelBackColor = System.Drawing.Color.Yellow
-        Series2.LabelBorderColor = System.Drawing.Color.Yellow
-        Series2.Legend = "Legend1"
-        Series2.Name = "Series1"
-        Me.PieChart.Series.Add(Series2)
+        Series5.ChartArea = "ChartArea1"
+        Series5.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Pie
+        Series5.LabelBackColor = System.Drawing.Color.Yellow
+        Series5.LabelBorderColor = System.Drawing.Color.Yellow
+        Series5.Legend = "Legend1"
+        Series5.Name = "Series1"
+        Me.PieChart.Series.Add(Series5)
         Me.PieChart.Size = New System.Drawing.Size(554, 606)
         Me.PieChart.TabIndex = 19
         Me.PieChart.Text = "Pie Chart showing the proportions of different isotopes at a given time"
@@ -184,38 +188,38 @@ Partial Class Sim
         '
         Me.DecayCurve.BackColor = System.Drawing.Color.Yellow
         Me.DecayCurve.BorderlineColor = System.Drawing.Color.Yellow
-        ChartArea3.AxisX.Title = "Time"
-        ChartArea3.AxisY.Title = "Number Of Nuclei"
-        ChartArea3.BackColor = System.Drawing.Color.Yellow
-        ChartArea3.Name = "ChartArea1"
-        Me.DecayCurve.ChartAreas.Add(ChartArea3)
-        Legend3.BackColor = System.Drawing.Color.Yellow
-        Legend3.Name = "Legend1"
-        Me.DecayCurve.Legends.Add(Legend3)
-        Me.DecayCurve.Location = New System.Drawing.Point(465, 122)
+        ChartArea6.AxisX.Title = "Time"
+        ChartArea6.AxisY.Title = "Number Of Nuclei"
+        ChartArea6.BackColor = System.Drawing.Color.Yellow
+        ChartArea6.Name = "ChartArea1"
+        Me.DecayCurve.ChartAreas.Add(ChartArea6)
+        Legend6.BackColor = System.Drawing.Color.Yellow
+        Legend6.Name = "Legend1"
+        Me.DecayCurve.Legends.Add(Legend6)
+        Me.DecayCurve.Location = New System.Drawing.Point(180, 122)
         Me.DecayCurve.Name = "DecayCurve"
         Me.DecayCurve.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.None
         Me.DecayCurve.PaletteCustomColors = New System.Drawing.Color() {System.Drawing.Color.LimeGreen, System.Drawing.Color.Red, System.Drawing.Color.FromArgb(CType(CType(128, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(255, Byte), Integer)), System.Drawing.Color.Fuchsia, System.Drawing.Color.Aqua, System.Drawing.Color.FromArgb(CType(CType(255, Byte), Integer), CType(CType(128, Byte), Integer), CType(CType(0, Byte), Integer))}
-        Series3.BorderWidth = 4
-        Series3.ChartArea = "ChartArea1"
-        Series3.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline
-        Series3.LabelBackColor = System.Drawing.Color.Yellow
-        Series3.LabelBorderWidth = 5
-        Series3.Legend = "Legend1"
-        Series3.MarkerSize = 2
-        Series3.Name = "Series1"
-        DataPoint2.LabelBackColor = System.Drawing.Color.Yellow
-        DataPoint3.LabelBackColor = System.Drawing.Color.Yellow
-        DataPoint4.LabelBackColor = System.Drawing.Color.Yellow
-        DataPoint5.LabelBackColor = System.Drawing.Color.Yellow
-        DataPoint6.LabelBackColor = System.Drawing.Color.Yellow
-        Series3.Points.Add(DataPoint2)
-        Series3.Points.Add(DataPoint3)
-        Series3.Points.Add(DataPoint4)
-        Series3.Points.Add(DataPoint5)
-        Series3.Points.Add(DataPoint6)
-        Me.DecayCurve.Series.Add(Series3)
-        Me.DecayCurve.Size = New System.Drawing.Size(558, 587)
+        Series6.BorderWidth = 4
+        Series6.ChartArea = "ChartArea1"
+        Series6.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Spline
+        Series6.LabelBackColor = System.Drawing.Color.Yellow
+        Series6.LabelBorderWidth = 5
+        Series6.Legend = "Legend1"
+        Series6.MarkerSize = 2
+        Series6.Name = "Series1"
+        DataPoint8.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint9.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint10.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint11.LabelBackColor = System.Drawing.Color.Yellow
+        DataPoint12.LabelBackColor = System.Drawing.Color.Yellow
+        Series6.Points.Add(DataPoint8)
+        Series6.Points.Add(DataPoint9)
+        Series6.Points.Add(DataPoint10)
+        Series6.Points.Add(DataPoint11)
+        Series6.Points.Add(DataPoint12)
+        Me.DecayCurve.Series.Add(Series6)
+        Me.DecayCurve.Size = New System.Drawing.Size(1078, 587)
         Me.DecayCurve.TabIndex = 20
         Me.DecayCurve.Text = "Decay Curve of different isotopes"
         Me.DecayCurve.Visible = False
@@ -280,12 +284,36 @@ Partial Class Sim
         Me.ReturnToSimMenu.UseVisualStyleBackColor = False
         Me.ReturnToSimMenu.Visible = False
         '
+        'Loading1
+        '
+        Me.Loading1.AutoSize = True
+        Me.Loading1.Font = New System.Drawing.Font("Comic Sans MS", 36.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Loading1.Location = New System.Drawing.Point(546, 323)
+        Me.Loading1.Name = "Loading1"
+        Me.Loading1.Size = New System.Drawing.Size(261, 67)
+        Me.Loading1.TabIndex = 25
+        Me.Loading1.Text = "Loading..."
+        Me.Loading1.Visible = False
+        '
+        'Loading2
+        '
+        Me.Loading2.AutoSize = True
+        Me.Loading2.Font = New System.Drawing.Font("Comic Sans MS", 36.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.Loading2.Location = New System.Drawing.Point(521, 390)
+        Me.Loading2.Name = "Loading2"
+        Me.Loading2.Size = New System.Drawing.Size(306, 67)
+        Me.Loading2.TabIndex = 26
+        Me.Loading2.Text = "Please Wait"
+        Me.Loading2.Visible = False
+        '
         'Sim
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Yellow
         Me.ClientSize = New System.Drawing.Size(1515, 869)
+        Me.Controls.Add(Me.Loading2)
+        Me.Controls.Add(Me.Loading1)
         Me.Controls.Add(Me.ReturnToSimMenu)
         Me.Controls.Add(Me.Button3)
         Me.Controls.Add(Me.Button2)
@@ -295,9 +323,9 @@ Partial Class Sim
         Me.Controls.Add(Me.DecayCurveButton)
         Me.Controls.Add(Me.PieChartButton)
         Me.Controls.Add(Me.BarChartButton)
+        Me.Controls.Add(Me.BarChart)
         Me.Controls.Add(Me.DecayCurve)
         Me.Controls.Add(Me.PieChart)
-        Me.Controls.Add(Me.BarChart)
         Me.Font = New System.Drawing.Font("Comic Sans MS", 8.25!, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
         Me.Name = "Sim"
         Me.Text = "Sim"
@@ -305,6 +333,7 @@ Partial Class Sim
         CType(Me.PieChart, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.DecayCurve, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
@@ -320,4 +349,6 @@ Partial Class Sim
     Friend WithEvents Button2 As Button
     Friend WithEvents Button3 As Button
     Friend WithEvents ReturnToSimMenu As Button
+    Friend WithEvents Loading1 As Label
+    Friend WithEvents Loading2 As Label
 End Class
