@@ -1,6 +1,5 @@
 ﻿
 Imports System.Windows.Forms.DataVisualization.Charting
-Imports System.Threading
 
 Class Sim
     Private AlphaIsotopes As New List(Of Alpha)
