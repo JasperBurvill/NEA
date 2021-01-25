@@ -78,6 +78,12 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssignmentViewer.Designer.vb">
+      <DependentUpon>AssignmentViewer.vb</DependentUpon>
+    </Compile>
+    <Compile Include="AssignmentViewer.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
@@ -132,6 +138,9 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="AssignmentViewer.resx">
+      <DependentUpon>AssignmentViewer.vb</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="My Project\ChooseStartingIsotopes.resx">
       <DependentUpon>ChooseStartingIsotopes.vb</DependentUpon>
     </EmbeddedResource>

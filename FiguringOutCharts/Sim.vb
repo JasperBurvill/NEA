@@ -1,14 +1,31 @@
 ﻿
 Imports System.Windows.Forms.DataVisualization.Charting
-
+Imports System.IO
 Class Sim
     Private AlphaIsotopes As New List(Of Alpha)
     Private BetaIsotopes As New List(Of Beta)
     Private PresentIsotopes As New List(Of Isotope)
     Private StartingIsotopes As New List(Of Isotope)
     Private IsotopesOnCurve As New List(Of String)
+    Private MainMenu As MainMenu
+    Private CurrentTeacher As Teacher
+    Private CurrentStudent As Student
+    Private IsTeacher As Boolean
+    Private TimeToCalculateFrom As Date
     Private TimeInterval As Double
     Private CurrentTime As Integer
+
+    Public Sub New(CurrentUser As Object, IsTeacher As Boolean, MainMenu As MainMenu)
+        InitializeComponent()
+        Me.IsTeacher = IsTeacher
+        Me.MainMenu = MainMenu
+        If IsTeacher Then
+            CurrentTeacher = CurrentUser
+        Else
+            CurrentStudent = CurrentUser
+            If CurrentStudent.GetAccountID = "0" Then SaveSim.Hide()
+        End If
+    End Sub
     Private Sub BarChartButton_Click(sender As Object, e As EventArgs) Handles BarChartButton.Click
         BarChartButton.Hide()
         PieChartButton.Hide()
@@ -56,8 +73,47 @@ Class Sim
 
     Private Sub EnterTimeButton_Click(sender As Object, e As EventArgs) Handles EnterTimeButton.Click
         ProgressSim(InputBox("Enter the time that you would like to go to (in " & TimeInterval & "s of seconds)"))
-
     End Sub
+
+    Private Sub ReturnToMenu_Click(sender As Object, e As EventArgs) Handles ReturnToMenu.Click
+        If Not IsTeacher And CurrentStudent.GetAccountID <> "0" Then CurrentStudent.UpdateAssignments(1, CalculateTimeSpent)
+        MainMenu.Show()
+        Hide()
+    End Sub
+
+    Private Sub SaveSim_Click(sender As Object, e As EventArgs) Handles SaveSim.Click
+        Dim FileName As String
+        Dim AccountID As String
+        If IsTeacher Then
+            AccountID = CurrentTeacher.GetAccountID
+        Else
+            AccountID = CurrentStudent.GetAccountID
+        End If
+        Do
+            FileName = InputBox("What would you like to call the file?")
+            FileName = "C:\NEASimStorage\" & AccountID & FileName & ".txt"
+        Loop Until IsValidFileName(FileName)
+        CreateFile(FileName)
+    End Sub
+
+    Public Sub CreateFile(FileName As String)
+        Dim MyWriter As New StreamWriter(FileName)
+        For i = 0 To StartingIsotopes.Count - 1
+            MyWriter.WriteLine(String.Format("{0},{1},{2}", StartingIsotopes(i).GetAtomicNumber, StartingIsotopes(i).GetAtomicMass, StartingIsotopes(i).GetNumberOfNuclei))
+        Next
+        MyWriter.Flush()
+    End Sub
+
+    Public Function IsValidFileName(Filename)
+        If System.IO.File.Exists(Filename) Then
+            MsgBox("A file with that name already exists under this account")
+            Return False
+        Else
+            MsgBox("File name valid")
+            Return True
+        End If
+        Return False
+    End Function
 
     Public Sub UpdateChart()
         If BarChart.Visible = True Then
@@ -72,7 +128,7 @@ Class Sim
                 PieChart.Series(0).Points.Add(PresentIsotopes(i).GetNumberOfNuclei)
                 PieChart.Series(0).Points(i).LegendText = GetIsotopeData(PresentIsotopes(i).GetAtomicNumber, PresentIsotopes(i).GetAtomicMass, 0)
             Next
-        ElseIf DecayCurve.Visible = True Then '=======================================================================
+        ElseIf DecayCurve.Visible = True Then
             Dim NumberOfNuclei As Integer
             For i = 0 To PresentIsotopes.Count - 1
                 NumberOfNuclei = PresentIsotopes(i).GetNumberOfNuclei
@@ -89,7 +145,6 @@ Class Sim
 
         End If
     End Sub
-
 
     Public Function CheckIfIsotopeIsOnCurve(AtomicNumber, AtomicMass)
         For i = 0 To DecayCurve.Series.Count - 1
@@ -132,6 +187,8 @@ Class Sim
         Next
         If DecayCurve.Visible = False Then UpdateChart()
         CurrentTime = Time
+        If Not IsTeacher Then CurrentStudent.UpdateAssignments(1, CalculateTimeSpent)
+        SetTimeToCalculateFrom()
     End Sub
 
     Public Function GetIsotopeData(AtomicNumber, AtomicMass, Index)
@@ -152,7 +209,6 @@ Class Sim
             Return 0
         End Using
     End Function
-
     Public Function IsIsotopeReal(AtomicNumber, AtomicMass)
         If GetIsotopeData(AtomicNumber, AtomicMass, 3) = 0 Then Return False
         Return True
@@ -191,6 +247,13 @@ Class Sim
         Loop Until HalfLife <= 100
     End Sub
 
+    Public Sub SetTimeToCalculateFrom()
+        TimeToCalculateFrom = Now
+    End Sub
+
+    Public Function CalculateTimeSpent()
+        Return (Now - TimeToCalculateFrom).TotalMinutes
+    End Function
 End Class
 
 
@@ -213,11 +276,11 @@ Class Isotope
     End Sub
 
     Public Function GetNewAlphaRatio(AtomicNumber, AtomicMass)
-        Return Sim.GetIsotopeData(AtomicNumber, AtomicMass, 1)
+        Return GetIsotopeData(AtomicNumber, AtomicMass, 1)
     End Function
 
     Public Function GetNewHalfLife(AtomicNumber, AtomicMass)
-        Return Sim.GetIsotopeData(AtomicNumber, AtomicMass, 2)
+        Return GetIsotopeData(AtomicNumber, AtomicMass, 2)
     End Function
 
     Public Function CheckIfIsotopePresent(AtomicNumber As Integer, AtomicMass As Integer, ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta))
@@ -228,6 +291,25 @@ Class Isotope
             End If
         Next
         Return IsotopeIndex
+    End Function
+
+    Public Function GetIsotopeData(AtomicNumber, AtomicMass, Index)
+        Using MyReader As New Microsoft.VisualBasic.FileIO.TextFieldParser("Isotopes.txt")
+            MyReader.TextFieldType = FileIO.FieldType.Delimited
+            MyReader.SetDelimiters(", ")
+            Dim currentRow As String()
+            While Not MyReader.EndOfData
+                Try
+                    currentRow = MyReader.ReadFields()
+                    If currentRow(3) = AtomicNumber And currentRow(4) = AtomicMass Then
+                        Return (currentRow(Index))
+                    End If
+                Catch ex As Microsoft.VisualBasic.FileIO.MalformedLineException
+                    MsgBox("Line " & ex.Message & "is not valid and will be skipped.")
+                End Try
+            End While
+            Return 0
+        End Using
     End Function
 
     Public Sub AddNuclei(NumberAdded)

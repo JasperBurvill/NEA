@@ -1,26 +1,23 @@
 ﻿Imports MySql.Data.MySqlClient
 Public Class StartUpMenu
-    Private ConnStr As String = "server=localhost;user=Dev;port=3306;password=Turtwig;"
+    Private MainMenu As New MainMenu
+    Private ConnStr As String
     Private DDLstr As String
     Private SQLstr As String
     Private MyCommand As MySqlCommand
     Private MyConnection As MySqlConnection
-    Private MyReader As MySqlDataReader
     Private AccountID As String
     Private FirstName As String
     Private Surname As String
     Private Password As String
     Private IsTeacher As Boolean
-    Private ClassID As String
-    Private Sub StartUpMenu_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-
-    End Sub
+    Private TeacherID As String
 
     Private Sub ExitProgram_Click(sender As Object, e As EventArgs) Handles ExitProgram.Click
         End
     End Sub
     Private Sub UseGuest_Click(sender As Object, e As EventArgs) Handles UseGuest.Click
-        Dim MainMenu As New MainMenu
+        MainMenu.LogIn("0", False) 'I've treated the guest user as a student with accountID of zero. They can't click any of the buttons that would cause problems, so this works fine.
         MainMenu.Show()
         Hide()
     End Sub
@@ -28,38 +25,40 @@ Public Class StartUpMenu
     Private Sub LogIn_Click(sender As Object, e As EventArgs) Handles LogIn.Click
         Dim ValidAccount As Boolean = True
         Dim CorrectPassword As Boolean = True
-        ConnStr = "server=localhost;user=Dev;port=3306;database=simaccounts;password=Turtwig;"
-        OpenDatabase()
+        OpenDatabase() 'Opens the database full of accounts
         Do
             ValidAccount = True
             Try
                 AccountID = InputBox("Enter your account ID")
-                If AccountID.Length = 3 Then
+                If AccountID.Length = 3 Then 'Teacher's have an ID of length 3, whereas students have a length of 6, allowing me to differentiate between them easily
                     SQLstr = "SELECT Password FROM Teachers WHERE TeacherID = '" & AccountID & "'"
+                    IsTeacher = True
                 ElseIf AccountID.Length = 6 Then
                     SQLstr = "SELECT Password FROM Students WHERE StudentID = '" & AccountID & "'"
-                End If
+                    IsTeacher = False
+                End If '^^Sets the SQL query to retrieve the password from the relevant table for the given ID
                 MyCommand = New MySqlCommand(SQLstr, MyConnection)
                 MyCommand.CommandType = CommandType.Text
-                Password = MyCommand.ExecuteScalar
-                If Password = "" Then
+                Password = MyCommand.ExecuteScalar 'Executes the SQL query and stores the result in the password variable
+                If Password = "" Then 'This will only trigger if the database returns a null value for the password, which would mean that the account does not exist.
                     MsgBox("Account does not exist, please try again")
-                    ValidAccount = False
+                    ValidAccount = False 'Causes the do loop to keep iterating until a valid account is entered
                 End If
             Catch ex As Exception
-                MsgBox(ex.Message)
+                MsgBox(ex.Message) 'Returns an error message if something goes wrong in accessing the database
             End Try
         Loop Until ValidAccount
         Do
             CorrectPassword = True
-            If InputBox("Please enter your password") = Password Then
-                MsgBox("Logged in")
-            Else
-                MsgBox("Incorrect Password")
+            If InputBox("Please enter your password") <> Password Then
                 CorrectPassword = False
+                MsgBox("Incorrect Password")
             End If
-        Loop Until CorrectPassword
-
+        Loop Until CorrectPassword 'Only lets the user progress if they get the password correct for the account they entered
+        MyConnection.Close()
+        MainMenu.LogIn(AccountID, IsTeacher) 'Opens the main menu and logs the user in
+        MainMenu.Show()
+        Hide()
     End Sub
 
     Private Sub CreateAccount_Click(sender As Object, e As EventArgs) Handles CreateAccount.Click
@@ -81,24 +80,27 @@ Public Class StartUpMenu
                 Password = InputBox("Please choose a password")
             Loop Until ValidatePassword(Password)
         Loop Until InputBox("Please confirm your password") = Password
-        ClassID = InputBox("Please enter your class")
-        MakeAccount(AccountID, FirstName, Surname, Password, IsTeacher, ClassID)
+        If IsTeacher = False Then TeacherID = InputBox("Please enter your teacher's ID")
+        MakeAccount(AccountID, FirstName, Surname, Password, IsTeacher, TeacherID)
+        MainMenu.LogIn(AccountID, IsTeacher)
+        MainMenu.Show()
+        Hide()
     End Sub
 
     Public Function ValidateAccountID(IsTeacher As Boolean, AccountID As String)
-        Dim Number As New System.Text.RegularExpressions.Regex("[0-9]")
+        Dim Number As New System.Text.RegularExpressions.Regex("[0-9]") 'Regex is used here to make sure that the IDs fit the format they should fit for the type of account they represent
         Dim Upper As New System.Text.RegularExpressions.Regex("[A-Z]")
-        If IsTeacher = True And AccountID.Length <> 3 Or Upper.Matches(AccountID).Count <> AccountID.Length Then
+        If IsTeacher = True And AccountID.Length <> 3 Or IsTeacher = True And Upper.Matches(AccountID).Count <> AccountID.Length Then
             MsgBox("Your ID must be three characters in length and must contain only upper case letters")
             Return False
-        ElseIf IsTeacher = False And AccountID.Length <> 6 Or Number.Matches(AccountID).Count <> AccountID.Length Then
+        ElseIf IsTeacher = False And AccountID.Length <> 6 Or (IsTeacher = False And Number.Matches(AccountID).Count <> AccountID.Length) Then
             MsgBox("Your ID must be six characters in length and must contain only numbers")
             Return False
         End If
         Return True
     End Function
-    Public Function ValidatePassword(Password)
-        Dim Upper As New System.Text.RegularExpressions.Regex("[A-Z]")
+    Public Function ValidatePassword(Password As String)
+        Dim Upper As New System.Text.RegularExpressions.Regex("[A-Z]") 'This forces the user to choose a password with a mixture of upper case, lower case, and numbers for security purposes
         Dim Lower As New System.Text.RegularExpressions.Regex("[a-z]")
         Dim Number As New System.Text.RegularExpressions.Regex("[0-9]")
         Dim Special As New System.Text.RegularExpressions.Regex("[^a-zA-Z0-9]")
@@ -109,48 +111,52 @@ Public Class StartUpMenu
         Return True
     End Function
 
-    Public Sub MakeAccount(AccountID, FirstName, Surname, Password, IsTeacher, ClassID)
-        ConnStr = "server=localhost;user=Dev;port=3306;database=simaccounts;password=Turtwig;"
+    Public Sub MakeAccount(AccountID As String, FirstName As String, Surname As String, Password As String, IsTeacher As Boolean, TeacherID As String)
         If IsTeacher = True Then
-            DDLstr = "CREATE TABLE Teachers
+            DDLstr = "CREATE TABLE IF NOT EXISTS Teachers
 (TeacherID Char(3) NOT NULL PRIMARY KEY,
 FirstName Varchar(25),
 Surname Varchar(25),
-Password Varchar(25),
-ClassID Varchar(3))"
+Password Varchar(25))"
         Else
-            DDLstr = "CREATE TABLE Students
+            DDLstr = "CREATE TABLE IF NOT EXISTS Students
 (StudentID Char(6) NOT NULL PRIMARY KEY,
 FirstName Varchar(25),
 Surname Varchar(25),
 Password Varchar(25),
-ClassID Varchar(3))"
+TeacherID Char(3))"
         End If
-        OpenDatabase()
+        OpenDatabase() '^^If the table being accessed doesnt already exist then it is created with the necessary features
         ExecuteCommand(DDLstr)
         If IsTeacher = True Then
-            SQLstr = "INSERT INTO Teachers(TeacherID, FirstName, Surname, Password, ClassID) VALUES ('" & AccountID & "','" & FirstName & "','" & Surname & "','" & Password & "','" & ClassID & "')"
+            SQLstr = "INSERT INTO Teachers(TeacherID, FirstName, Surname, Password) VALUES ('" & AccountID & "','" & FirstName & "','" & Surname & "','" & Password & "')"
         Else
-            SQLstr = "INSERT INTO Students(StudentID, FirstName, Surname, Password, ClassID) VALUES ('" & AccountID & "','" & FirstName & "','" & Surname & "','" & Password & "','" & ClassID & "')"
+            SQLstr = "INSERT INTO Students(StudentID, FirstName, Surname, Password, TeacherID) VALUES ('" & AccountID & "','" & FirstName & "','" & Surname & "','" & Password & "','" & TeacherID & "')"
         End If
         ExecuteCommand(SQLstr)
         MyConnection.Close()
-        MainMenu.LogIn(AccountID, Password)
     End Sub
-    Public Sub ExecuteCommand(SQLstr)
+
+    Public Sub ExecuteCommand(Commstr As String) 'Basic sub to execute standard SQL or DDL commands that don't have a special format to them
         Try
-            MyCommand = New MySqlCommand(SQLstr, MyConnection)
+            MyCommand = New MySqlCommand(Commstr, MyConnection)
             MyCommand.ExecuteNonQuery()
-            MsgBox("Successfully executed command")
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try
     End Sub
-    Public Sub OpenDatabase()
+
+    Public Sub OpenDatabase() 'Sub to create and open the database when it needs to be accessed elsewhere in the class
         Try
+            ConnStr = "server=localhost;user=Dev;port=3306;password=Turtwig;" 'The connection string needs to be changed to be on the database level rather than the entity level
             MyConnection = New MySqlConnection(ConnStr)
             MyConnection.Open()
-            MsgBox("open :)")
+            MyCommand = New MySqlCommand("CREATE DATABASE IF NOT EXISTS `simaccounts`;", MyConnection)
+            MyCommand.ExecuteNonQuery()
+            MyConnection.Close()
+            ConnStr = "server=localhost;user=Dev;port=3306;database=simaccounts;password=Turtwig;" 'Changes the connection string back
+            MyConnection = New MySqlConnection(ConnStr)
+            MyConnection.Open()
         Catch ex As Exception
             MsgBox(ex.Message)
         End Try

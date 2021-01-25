@@ -34,6 +34,7 @@ Partial Class MainMenu
         Me.PictureBox2 = New System.Windows.Forms.PictureBox()
         Me.PictureBox1 = New System.Windows.Forms.PictureBox()
         Me.Label1 = New System.Windows.Forms.Label()
+        Me.WelcomeLabel = New System.Windows.Forms.Label()
         CType(Me.PictureBox4, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox3, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PictureBox2, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -164,11 +165,21 @@ Partial Class MainMenu
         '
         Me.Label1.AutoSize = True
         Me.Label1.Font = New System.Drawing.Font("Comic Sans MS", 27.75!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.Label1.Location = New System.Drawing.Point(471, 56)
+        Me.Label1.Location = New System.Drawing.Point(471, 23)
         Me.Label1.Name = "Label1"
         Me.Label1.Size = New System.Drawing.Size(261, 51)
         Me.Label1.TabIndex = 20
         Me.Label1.Text = "MAIN MENU"
+        '
+        'WelcomeLabel
+        '
+        Me.WelcomeLabel.AutoSize = True
+        Me.WelcomeLabel.Font = New System.Drawing.Font("Comic Sans MS", 24.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.WelcomeLabel.Location = New System.Drawing.Point(462, 77)
+        Me.WelcomeLabel.Name = "WelcomeLabel"
+        Me.WelcomeLabel.Size = New System.Drawing.Size(0, 45)
+        Me.WelcomeLabel.TabIndex = 21
+        Me.WelcomeLabel.TextAlign = System.Drawing.ContentAlignment.MiddleCenter
         '
         'MainMenu
         '
@@ -176,6 +187,7 @@ Partial Class MainMenu
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Yellow
         Me.ClientSize = New System.Drawing.Size(1194, 626)
+        Me.Controls.Add(Me.WelcomeLabel)
         Me.Controls.Add(Me.PictureBox1)
         Me.Controls.Add(Me.Label1)
         Me.Controls.Add(Me.PictureBox4)
@@ -209,4 +221,5 @@ Partial Class MainMenu
     Friend WithEvents PictureBox2 As PictureBox
     Friend WithEvents PictureBox1 As PictureBox
     Friend WithEvents Label1 As Label
+    Friend WithEvents WelcomeLabel As Label
 End Class

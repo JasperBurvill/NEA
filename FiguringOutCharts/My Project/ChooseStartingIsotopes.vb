@@ -1,6 +1,10 @@
 ﻿Imports Microsoft.VisualBasic.PowerPacks
-Public Class ChooseStartingIsotopes
-
+Class ChooseStartingIsotopes
+    Private SimCreator As SimCreator
+    Public Sub New(ByVal SimCreator As SimCreator)
+        InitializeComponent()
+        Me.SimCreator = SimCreator
+    End Sub
 
     Private Sub Cancel_Click(sender As Object, e As EventArgs) Handles Cancel.Click
         SimCreator.Show()
@@ -18,7 +22,7 @@ Public Class ChooseStartingIsotopes
     End Sub
 
     Public Sub HandleIsotope(Isotope As String)
-        Dim FullIsotope As String
+        Dim FullIsotope As String = ""
         Dim AtomicNumber As Integer
         Dim AtomicMass As Integer
         Dim HalfLife As Double
@@ -51,4 +55,5 @@ Public Class ChooseStartingIsotopes
         End Select
 
     End Sub
+
 End Class
