@@ -28,28 +28,33 @@ Class MainMenu
 
     Private Sub SetAssignments_Click(sender As Object, e As EventArgs) Handles SetAssignments.Click
         Dim ListOfStudents As New List(Of String)
-        Dim Student As String = ""
+        Dim Student As String = "None selected"
         Dim FinishedSelecting As Boolean = False
         Dim IsTimeBased As Boolean
         Dim Time As Integer = 0
         Dim NumberOfRuns As Integer = 0
         Dim DueDate As Date
         Dim TempString As String = ""
-        Select Case MsgBox("Would you like to set an assignment for the whole class?", vbYesNo)
+        Select Case MsgBox("Would you like to set an assignment for the whole class?", vbYesNoCancel)
             Case vbYes
-                ListOfStudents = CurrentTeacher.GetWholeClass
+                ListOfStudents = CurrentTeacher.GetWholeClass 'Adds all the students to the list that are being set an assignment to save the teacher from typing out each one
             Case vbNo
                 Do
                     Do
-                        If Student <> "" Then MsgBox("That student is not in your class")
+                        If Student <> "None selected" Then MsgBox("That student is not in your class")
                         Student = InputBox("Enter the ID of the student that you would like to set an assignment for")
-                    Loop Until CurrentTeacher.CheckStudentIsInClass(Student)
+                        If Student = "" Then Exit Sub
+                    Loop Until CurrentTeacher.CheckStudentIsInClass(Student) 'Only allows the teacher to set assignments for students in their class
                     ListOfStudents.Add(Student)
                     Select Case MsgBox("Would you like to set the assignment for another student", vbYesNo)
                         Case vbNo
                             FinishedSelecting = True
                     End Select
-                Loop Until FinishedSelecting
+                Loop Until FinishedSelecting 'Keeps asking for students until the teacher says that they are done
+            Case vbCancel 'Returns the user to menu if they click the cancel button
+                Exit Sub
+            Case vbAbort
+                Exit Sub
         End Select
         Select Case MsgBox("Would you like to set the students to run simulations for a set period of time? (The alternative is to run a set number of simulations)", vbYesNoCancel)
             Case vbYes
@@ -57,43 +62,44 @@ Class MainMenu
                     IsTimeBased = True
                     Try
                         TempString = InputBox("Please enter the number of minutes that you would like to set an assignment for")
-                        If TempString.Contains(".") Then Time = NumberOfRuns / NumberOfRuns
-                        Time = TempString
-                        NumberOfRuns = Time / Time
-                        NumberOfRuns = 0
+                        If TempString = "" Then Exit Sub
+                        If TempString.Contains(".") Then IsTimeBased = False
+                        Time = TempString 'Triggers the try catch statement if the user enters a non-number
                     Catch ex As Exception
                         IsTimeBased = False
                     End Try
                     If IsTimeBased = False Or Time = 0 Then MsgBox("Please enter an integer number of minutes that is greater than zero")
-                Loop Until IsTimeBased = True And Time > 0
+                Loop Until IsTimeBased = True And Time > 0 'Keeps looping until a valid input is entered
             Case vbNo
                 Do
                     IsTimeBased = False
                     Try
                         TempString = InputBox("Please enter the number of runs that you would like to set an assignment to complete ")
-                        If TempString.Contains(".") Then NumberOfRuns = Time / Time
-                        NumberOfRuns = TempString
-                        Time = NumberOfRuns / NumberOfRuns
-                        Time = 0
+                        If TempString = "" Then Exit Sub
+                        If TempString.Contains(".") Then IsTimeBased = True
+                        NumberOfRuns = TempString 'Triggers the try catch statement if the user enters a non-number
                     Catch ex As Exception
                         IsTimeBased = True
                     End Try
                     If IsTimeBased = True Then MsgBox("Please enter an integer number of runs that is greater than zero ")
-                Loop Until IsTimeBased = False And NumberOfRuns > 0
+                Loop Until IsTimeBased = False And NumberOfRuns > 0 'Keeps looping until a valid input is entered
+            Case vbCancel
+                Exit Sub
+            Case vbAbort
+                Exit Sub
         End Select
         Do
             FinishedSelecting = True
             Try
-                TempString = InputBox("Please enter the year that you would like this assignment to be due.") + "-"
-                TempString = TempString + InputBox("Please enter the month (as a number)") + "-"
-                TempString = TempString + InputBox("Please enter the day (as a number)")
-                DueDate = TempString
+                TempString = InputBox("Enter the date that the assignment is due (format dd/MM/yyyy)")
+                If TempString = "" Then Exit Sub
+                DueDate = TempString 'Will trigger the try catch if an invalid date is entered
             Catch ex As Exception
                 MsgBox("Please enter a valid date")
                 FinishedSelecting = False
             End Try
         Loop Until FinishedSelecting = True
-        CurrentTeacher.SetAssignments(ListOfStudents, IsTimeBased, Time, NumberOfRuns, TempString)
+        CurrentTeacher.SetAssignments(ListOfStudents, IsTimeBased, Time, NumberOfRuns, DueDate) 'Sets the assignment with the parameters chosen
     End Sub
 
     Private Sub LogOut_Click(sender As Object, e As EventArgs) Handles LogOut.Click 'Closes the main menu and returns to the start up menu
@@ -111,7 +117,7 @@ Class MainMenu
         Dim Sim As Sim
         Do
             FileName = InputBox("Enter the name of the file that you wish to load")
-
+            If FileName = "" Then Exit Sub
             If SetAssignments.Visible Then
                 Sim = New Sim(CurrentTeacher, True, Me)
                 FileName = CurrentTeacher.GetAccountID & FileName
@@ -261,7 +267,7 @@ Class Teacher
         MyConnection.Close()
     End Sub
 
-    Public Sub SetAssignments(ListOfStudents As List(Of String), IsTimeBased As Boolean, Time As Integer, NumberOfRuns As Integer, DueDate As String)
+    Public Sub SetAssignments(ListOfStudents As List(Of String), IsTimeBased As Boolean, Time As Integer, NumberOfRuns As Integer, DueDate As Date)
         DDLstr = "CREATE TABLE IF NOT EXISTS Assignments
 (AssignmentID INT PRIMARY KEY,
 StudentID CHAR(6), 
@@ -275,12 +281,13 @@ Completed BOOLEAN)"
         ExecuteCommand(DDLstr)
         For i = 0 To ListOfStudents.Count - 1
             If IsTimeBased = True Then
-                DDLstr = "INSERT INTO Assignments(AssignmentID, StudentID, TeacherID, TimeOrRuns, TimeOrRunsRemaining, DueDate, Completed) VALUES ('" & GetNextAssignmentID() & "','" & ListOfStudents(i) & "','" & AccountID & "','Time','" & Time & "','" & DueDate & "','0')"
+                DDLstr = "INSERT INTO Assignments(AssignmentID, StudentID, TeacherID, TimeOrRuns, TimeOrRunsRemaining, DueDate, Completed) VALUES ('" & GetNextAssignmentID() & "','" & ListOfStudents(i) & "','" & AccountID & "','Time','" & Time & "','" & DueDate.ToString("yyyy-MM-dd") & "','0')"
             Else
-                DDLstr = "INSERT INTO Assignments(AssignmentID, StudentID, TeacherID, TimeOrRuns, TimeOrRunsRemaining, DueDate, Completed) VALUES ('" & GetNextAssignmentID() & "','" & ListOfStudents(i) & "','" & AccountID & "','Runs','" & NumberOfRuns & "','" & DueDate & "','0')"
+                DDLstr = "INSERT INTO Assignments(AssignmentID, StudentID, TeacherID, TimeOrRuns, TimeOrRunsRemaining, DueDate, Completed) VALUES ('" & GetNextAssignmentID() & "','" & ListOfStudents(i) & "','" & AccountID & "','Runs','" & NumberOfRuns & "','" & DueDate.ToString("yyyy-MM-dd") & "','0')"
             End If
             ExecuteCommand(DDLstr) 'Adds the assignment to the assignment table
         Next
+        MsgBox("Assignment set")
         MyConnection.Close()
     End Sub
 

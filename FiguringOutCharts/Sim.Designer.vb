@@ -47,6 +47,12 @@ Partial Class Sim
         Me.DecayCurve = New System.Windows.Forms.DataVisualization.Charting.Chart()
         Me.EnterTimeButton = New System.Windows.Forms.Button()
         Me.ReturnToSimMenu = New System.Windows.Forms.Button()
+        Me.AlphaLabel = New System.Windows.Forms.Label()
+        Me.BetaLabel = New System.Windows.Forms.Label()
+        Me.GammaLabel = New System.Windows.Forms.Label()
+        Me.NeutrinoLabel = New System.Windows.Forms.Label()
+        Me.ByproductLabel = New System.Windows.Forms.Label()
+        Me.ShowByproducts = New System.Windows.Forms.Button()
         CType(Me.BarChart, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.PieChart, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.DecayCurve, System.ComponentModel.ISupportInitialize).BeginInit()
@@ -58,7 +64,7 @@ Partial Class Sim
         Me.DecayCurveButton.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
         Me.DecayCurveButton.Cursor = System.Windows.Forms.Cursors.Hand
         Me.DecayCurveButton.Font = New System.Drawing.Font("Comic Sans MS", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
-        Me.DecayCurveButton.Location = New System.Drawing.Point(927, 359)
+        Me.DecayCurveButton.Location = New System.Drawing.Point(930, 359)
         Me.DecayCurveButton.Name = "DecayCurveButton"
         Me.DecayCurveButton.Size = New System.Drawing.Size(174, 105)
         Me.DecayCurveButton.TabIndex = 5
@@ -215,7 +221,7 @@ Partial Class Sim
         Series3.Points.Add(DataPoint5)
         Series3.Points.Add(DataPoint6)
         Me.DecayCurve.Series.Add(Series3)
-        Me.DecayCurve.Size = New System.Drawing.Size(1078, 587)
+        Me.DecayCurve.Size = New System.Drawing.Size(874, 587)
         Me.DecayCurve.TabIndex = 20
         Me.DecayCurve.Text = "Decay Curve of different isotopes"
         Me.DecayCurve.Visible = False
@@ -250,12 +256,88 @@ Partial Class Sim
         Me.ReturnToSimMenu.UseVisualStyleBackColor = False
         Me.ReturnToSimMenu.Visible = False
         '
+        'AlphaLabel
+        '
+        Me.AlphaLabel.AutoSize = True
+        Me.AlphaLabel.Font = New System.Drawing.Font("Comic Sans MS", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.AlphaLabel.Location = New System.Drawing.Point(1093, 364)
+        Me.AlphaLabel.Name = "AlphaLabel"
+        Me.AlphaLabel.Size = New System.Drawing.Size(225, 25)
+        Me.AlphaLabel.TabIndex = 25
+        Me.AlphaLabel.Text = "Alpha particles emitted:"
+        Me.AlphaLabel.Visible = False
+        '
+        'BetaLabel
+        '
+        Me.BetaLabel.AutoSize = True
+        Me.BetaLabel.Font = New System.Drawing.Font("Comic Sans MS", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.BetaLabel.Location = New System.Drawing.Point(1093, 432)
+        Me.BetaLabel.Name = "BetaLabel"
+        Me.BetaLabel.Size = New System.Drawing.Size(216, 25)
+        Me.BetaLabel.TabIndex = 26
+        Me.BetaLabel.Text = "Beta particles emitted:"
+        Me.BetaLabel.Visible = False
+        '
+        'GammaLabel
+        '
+        Me.GammaLabel.AutoSize = True
+        Me.GammaLabel.Font = New System.Drawing.Font("Comic Sans MS", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.GammaLabel.Location = New System.Drawing.Point(1093, 500)
+        Me.GammaLabel.Name = "GammaLabel"
+        Me.GammaLabel.Size = New System.Drawing.Size(226, 25)
+        Me.GammaLabel.TabIndex = 27
+        Me.GammaLabel.Text = "Gamma photons emitted:"
+        Me.GammaLabel.Visible = False
+        '
+        'NeutrinoLabel
+        '
+        Me.NeutrinoLabel.AutoSize = True
+        Me.NeutrinoLabel.Font = New System.Drawing.Font("Comic Sans MS", 13.0!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.NeutrinoLabel.Location = New System.Drawing.Point(1093, 561)
+        Me.NeutrinoLabel.Name = "NeutrinoLabel"
+        Me.NeutrinoLabel.Size = New System.Drawing.Size(294, 25)
+        Me.NeutrinoLabel.TabIndex = 28
+        Me.NeutrinoLabel.Text = "Anti-electron neutrinos emitted:"
+        Me.NeutrinoLabel.Visible = False
+        '
+        'ByproductLabel
+        '
+        Me.ByproductLabel.AutoSize = True
+        Me.ByproductLabel.Font = New System.Drawing.Font("Comic Sans MS", 18.0!, CType((System.Drawing.FontStyle.Bold Or System.Drawing.FontStyle.Underline), System.Drawing.FontStyle), System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ByproductLabel.Location = New System.Drawing.Point(1092, 298)
+        Me.ByproductLabel.Name = "ByproductLabel"
+        Me.ByproductLabel.Size = New System.Drawing.Size(262, 35)
+        Me.ByproductLabel.TabIndex = 29
+        Me.ByproductLabel.Text = "Byproducts of decay:"
+        Me.ByproductLabel.Visible = False
+        '
+        'ShowByproducts
+        '
+        Me.ShowByproducts.BackColor = System.Drawing.Color.Aqua
+        Me.ShowByproducts.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None
+        Me.ShowByproducts.Cursor = System.Windows.Forms.Cursors.Hand
+        Me.ShowByproducts.Font = New System.Drawing.Font("Comic Sans MS", 11.25!, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, CType(0, Byte))
+        Me.ShowByproducts.Location = New System.Drawing.Point(1098, 204)
+        Me.ShowByproducts.Name = "ShowByproducts"
+        Me.ShowByproducts.Size = New System.Drawing.Size(188, 62)
+        Me.ShowByproducts.TabIndex = 30
+        Me.ShowByproducts.Text = "Show Byproducts"
+        Me.ShowByproducts.UseMnemonic = False
+        Me.ShowByproducts.UseVisualStyleBackColor = False
+        Me.ShowByproducts.Visible = False
+        '
         'Sim
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(7.0!, 15.0!)
         Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
         Me.BackColor = System.Drawing.Color.Yellow
         Me.ClientSize = New System.Drawing.Size(1515, 869)
+        Me.Controls.Add(Me.ShowByproducts)
+        Me.Controls.Add(Me.ByproductLabel)
+        Me.Controls.Add(Me.NeutrinoLabel)
+        Me.Controls.Add(Me.GammaLabel)
+        Me.Controls.Add(Me.BetaLabel)
+        Me.Controls.Add(Me.AlphaLabel)
         Me.Controls.Add(Me.ReturnToSimMenu)
         Me.Controls.Add(Me.EnterTimeButton)
         Me.Controls.Add(Me.SaveSim)
@@ -273,6 +355,7 @@ Partial Class Sim
         CType(Me.PieChart, System.ComponentModel.ISupportInitialize).EndInit()
         CType(Me.DecayCurve, System.ComponentModel.ISupportInitialize).EndInit()
         Me.ResumeLayout(False)
+        Me.PerformLayout()
 
     End Sub
 
@@ -286,4 +369,10 @@ Partial Class Sim
     Friend WithEvents DecayCurve As DataVisualization.Charting.Chart
     Friend WithEvents EnterTimeButton As Button
     Friend WithEvents ReturnToSimMenu As Button
+    Friend WithEvents AlphaLabel As Label
+    Friend WithEvents BetaLabel As Label
+    Friend WithEvents GammaLabel As Label
+    Friend WithEvents NeutrinoLabel As Label
+    Friend WithEvents ByproductLabel As Label
+    Friend WithEvents ShowByproducts As Button
 End Class

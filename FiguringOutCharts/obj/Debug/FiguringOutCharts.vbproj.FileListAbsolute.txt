@@ -52,3 +52,4 @@ C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutChar
 C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.pdb
 C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\bin\Debug\MySql.Data.dll
 C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.AssignmentViewer.resources
+C:\Users\Jasper\Documents\GitHub\NEA\FiguringOutCharts\obj\Debug\FiguringOutCharts.vbproj.ResolveComReference.cache

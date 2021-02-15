@@ -14,6 +14,10 @@ Class Sim
     Private TimeToCalculateFrom As Date
     Private TimeInterval As Double
     Private CurrentTime As Integer
+    Private AlphaEmitted As Integer
+    Private BetaEmitted As Integer
+    Private GammaEmitted As Integer
+    Private NeutrinosEmitted As Integer
 
     Public Sub New(CurrentUser As Object, IsTeacher As Boolean, MainMenu As MainMenu)
         InitializeComponent()
@@ -30,6 +34,7 @@ Class Sim
         BarChartButton.Hide()
         PieChartButton.Hide()
         DecayCurveButton.Hide()
+        ShowByproducts.Show()
         BarChart.Show()
         EnterTimeButton.Show()
         ReturnToSimMenu.Show()
@@ -40,6 +45,7 @@ Class Sim
         BarChartButton.Hide()
         PieChartButton.Hide()
         DecayCurveButton.Hide()
+        ShowByproducts.Show()
         PieChart.Show()
         EnterTimeButton.Show()
         ReturnToSimMenu.Show()
@@ -50,21 +56,26 @@ Class Sim
         BarChartButton.Hide()
         PieChartButton.Hide()
         DecayCurveButton.Hide()
+        ShowByproducts.Show()
         DecayCurve.Show()
         DecayCurve.ChartAreas(0).Axes(0).Title = ("Time/" & TimeInterval & " seconds")
         DecayCurve.Series.Clear()
         UpdateChart()
         ReturnToSimMenu.Show()
         ProgressSim(150)
+        RefreshLabels()
         ResetIsotopes()
         CurrentTime = 0
     End Sub
 
     Private Sub ReturnToSimMenu_Click(sender As Object, e As EventArgs) Handles ReturnToSimMenu.Click
+        If DecayCurve.Visible = True Then ResetByproducts()
         BarChart.Hide()
         PieChart.Hide()
         DecayCurve.Hide()
         EnterTimeButton.Hide()
+        If ShowByproducts.Text = "Hide Byproducts" Then ShowByproducts.PerformClick()
+        ShowByproducts.Hide()
         BarChartButton.Show()
         PieChartButton.Show()
         DecayCurveButton.Show()
@@ -73,6 +84,26 @@ Class Sim
 
     Private Sub EnterTimeButton_Click(sender As Object, e As EventArgs) Handles EnterTimeButton.Click
         ProgressSim(InputBox("Enter the time that you would like to go to (in " & TimeInterval & "s of seconds)"))
+        RefreshLabels()
+    End Sub
+
+    Private Sub ShowByproducts_Click(sender As Object, e As EventArgs) Handles ShowByproducts.Click
+        If ShowByproducts.Text = "Show Byproducts" Then
+            ShowByproducts.Text = "Hide Byproducts"
+            RefreshLabels()
+            AlphaLabel.Show()
+            BetaLabel.Show()
+            GammaLabel.Show()
+            NeutrinoLabel.Show()
+            ByproductLabel.Show()
+        Else
+            ShowByproducts.Text = "Show Byproducts"
+            AlphaLabel.Hide()
+            BetaLabel.Hide()
+            GammaLabel.Hide()
+            NeutrinoLabel.Hide()
+            ByproductLabel.Hide()
+        End If
     End Sub
 
     Private Sub ReturnToMenu_Click(sender As Object, e As EventArgs) Handles ReturnToMenu.Click
@@ -174,12 +205,13 @@ Class Sim
             Time = Time - CurrentTime
         Else
             ResetIsotopes()
+            ResetByproducts()
         End If
         For i = 1 To Time
             For j = AlphaIsotopes.Count - 1 To 0 Step -1
                 If AlphaIsotopes(j).GetHalfLife <> 0 Then 'Im representing a stable isotope as having a half-life of 0
-                    AlphaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
-                    BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
+                    AlphaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes, TimeInterval, Me)
+                    BetaIsotopes(j).Decay(AlphaIsotopes, BetaIsotopes, TimeInterval, Me)
                 End If
             Next
             CreatePresentIsotopes()
@@ -221,6 +253,13 @@ Class Sim
             End If
         Next
     End Sub
+
+    Public Sub ResetByproducts()
+        AlphaEmitted = 0
+        BetaEmitted = 0
+        GammaEmitted = 0
+        NeutrinosEmitted = 0
+    End Sub
     Public Sub ResetIsotopes()
         AlphaIsotopes.Clear()
         BetaIsotopes.Clear()
@@ -254,8 +293,28 @@ Class Sim
     Public Function CalculateTimeSpent()
         Return (Now - TimeToCalculateFrom).TotalMinutes
     End Function
-End Class
 
+    Public Sub IncreaseAlpha(NumberEmitted)
+        AlphaEmitted += NumberEmitted
+    End Sub
+    Public Sub IncreaseBeta(NumberEmitted)
+        BetaEmitted += NumberEmitted
+    End Sub
+    Public Sub IncreaseGamma(NumberEmitted)
+        GammaEmitted += NumberEmitted
+    End Sub
+    Public Sub IncreaseNeutrino(NumberEmitted)
+        NeutrinosEmitted += NumberEmitted
+    End Sub
+
+    Public Sub RefreshLabels()
+        AlphaLabel.Text = "Alpha Particles Emitted: " & FormatNumber(AlphaEmitted, NumDigitsAfterDecimal:=0, GroupDigits:=TriState.True)
+        BetaLabel.Text = "Beta Particles Emitted: " & FormatNumber(BetaEmitted, NumDigitsAfterDecimal:=0, GroupDigits:=TriState.True)
+        GammaLabel.Text = "Gamma Photons Emitted: " & FormatNumber(GammaEmitted, NumDigitsAfterDecimal:=0, GroupDigits:=TriState.True)
+        NeutrinoLabel.Text = "Anti-Electron Neutrinos Emitted: " & FormatNumber(NeutrinosEmitted, NumDigitsAfterDecimal:=0, GroupDigits:=TriState.True)
+    End Sub
+
+End Class
 
 Class Isotope
     Protected NumberOfNuclei As Double
@@ -270,8 +329,12 @@ Class Isotope
         Me.AtomicMass = AtomicMass
         Me.HalfLife = HalfLife
     End Sub
-    Public Overridable Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double)
-        DecayedNuclei = NumberOfNuclei - Math.Round(NumberOfNuclei * (Math.E ^ (-(Math.Log(2) / HalfLife) * TimeInterval)))
+    Public Overridable Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double, Sim As Sim)
+        Dim InvNormCalc As New Chart
+        Dim StandardNormalResult As Double
+        DecayedNuclei = NumberOfNuclei - Math.Round((StandardNormalResult * (NumberOfNuclei * (Math.E ^ (-(Math.Log(2) / HalfLife) * TimeInterval))) ^ 0.5) + NumberOfNuclei * (Math.E ^ (-(Math.Log(2) / HalfLife) * TimeInterval)))
+        If DecayedNuclei < 0 Then DecayedNuclei = 0
+        If DecayedNuclei > NumberOfNuclei Then DecayedNuclei = NumberOfNuclei
         NumberOfNuclei = NumberOfNuclei - DecayedNuclei
     End Sub
 
@@ -340,8 +403,8 @@ Class Alpha
         MyBase.New(NumberOfNuclei, AtomicNumber, AtomicMass, HalfLife)
     End Sub
 
-    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double)
-        MyBase.Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
+    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double, Sim As Sim)
+        MyBase.Decay(AlphaIsotopes, BetaIsotopes, TimeInterval, Sim)
         If CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes) >= 0 Then
             AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4))
             BetaIsotopes(CheckIfIsotopePresent(AtomicNumber - 2, AtomicMass - 4, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)))
@@ -349,6 +412,7 @@ Class Alpha
             AlphaIsotopes.Add(New Alpha(DecayedNuclei * GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4), AtomicNumber - 2, AtomicMass - 4, GetNewHalfLife(AtomicNumber - 2, AtomicMass - 4)))
             BetaIsotopes.Add(New Beta(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber - 2, AtomicMass - 4)), AtomicNumber - 2, AtomicMass - 4, GetNewHalfLife(AtomicNumber - 2, AtomicMass - 4)))
         End If
+        Sim.IncreaseAlpha(DecayedNuclei)
     End Sub
 End Class
 
@@ -357,8 +421,8 @@ Class Beta
     Public Sub New(ByVal NumberOfNuclei As Integer, ByVal AtomicNumber As Integer, ByVal AtomicMass As Integer, ByVal HalfLife As Double)
         MyBase.New(NumberOfNuclei, AtomicNumber, AtomicMass, HalfLife)
     End Sub
-    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double)
-        MyBase.Decay(AlphaIsotopes, BetaIsotopes, TimeInterval)
+    Public Overrides Sub Decay(ByRef AlphaIsotopes As List(Of Alpha), ByRef BetaIsotopes As List(Of Beta), TimeInterval As Double, Sim As Sim)
+        MyBase.Decay(AlphaIsotopes, BetaIsotopes, TimeInterval, Sim)
         If CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes) >= 0 Then
             AlphaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass))
             BetaIsotopes(CheckIfIsotopePresent(AtomicNumber + 1, AtomicMass, AlphaIsotopes, BetaIsotopes)).AddNuclei(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)))
@@ -366,5 +430,8 @@ Class Beta
             AlphaIsotopes.Add(New Alpha(DecayedNuclei * GetNewAlphaRatio(AtomicNumber + 1, AtomicMass), AtomicNumber + 1, AtomicMass, GetNewHalfLife(AtomicNumber + 1, AtomicMass)))
             BetaIsotopes.Add(New Beta(DecayedNuclei * (1 - GetNewAlphaRatio(AtomicNumber + 1, AtomicMass)), AtomicNumber + 1, AtomicMass, GetNewHalfLife(AtomicNumber + 1, AtomicMass)))
         End If
+        Sim.IncreaseBeta(DecayedNuclei)
+        Sim.IncreaseNeutrino(DecayedNuclei)
+        If AtomicNumber = 91 And AtomicMass = 234 Then Sim.IncreaseGamma(DecayedNuclei)
     End Sub
 End Class

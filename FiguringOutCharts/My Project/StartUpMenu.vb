@@ -25,11 +25,16 @@ Public Class StartUpMenu
     Private Sub LogIn_Click(sender As Object, e As EventArgs) Handles LogIn.Click
         Dim ValidAccount As Boolean = True
         Dim CorrectPassword As Boolean = True
+        Dim PasswordGuess As String
         OpenDatabase() 'Opens the database full of accounts
         Do
             ValidAccount = True
             Try
                 AccountID = InputBox("Enter your account ID")
+                If AccountID = "" Then
+                    MyConnection.Close()
+                    Exit Sub
+                End If
                 If AccountID.Length = 3 Then 'Teacher's have an ID of length 3, whereas students have a length of 6, allowing me to differentiate between them easily
                     SQLstr = "SELECT Password FROM Teachers WHERE TeacherID = '" & AccountID & "'"
                     IsTeacher = True
@@ -50,9 +55,13 @@ Public Class StartUpMenu
         Loop Until ValidAccount
         Do
             CorrectPassword = True
-            If InputBox("Please enter your password") <> Password Then
+            PasswordGuess = InputBox("Please enter your password")
+            If PasswordGuess <> Password And PasswordGuess <> "" Then
                 CorrectPassword = False
                 MsgBox("Incorrect Password")
+            ElseIf PasswordGuess = "" Then
+                MyConnection.Close()
+                Exit Sub
             End If
         Loop Until CorrectPassword 'Only lets the user progress if they get the password correct for the account they entered
         MyConnection.Close()
@@ -62,25 +71,38 @@ Public Class StartUpMenu
     End Sub
 
     Private Sub CreateAccount_Click(sender As Object, e As EventArgs) Handles CreateAccount.Click
-        Password = ""
+        Dim LoopCheck As Boolean = False
+        Dim ConfirmedPassword As String
         Select Case MsgBox("Are you a teacher? (If you are not a teacher then you are a student)", vbYesNoCancel)
             Case vbYes
                 IsTeacher = True
             Case vbNo
                 IsTeacher = False
+            Case vbCancel
+                Exit Sub
+            Case vbAbort
+                Exit Sub
         End Select
         Do
             AccountID = InputBox("Please enter your user ID")
+            If AccountID = "" Then Exit Sub
         Loop Until ValidateAccountID(IsTeacher, AccountID)
         FirstName = InputBox("Please enter your first name")
+        If FirstName = "" Then Exit Sub
         Surname = InputBox("Please enter your surname")
+        If Surname = "" Then Exit Sub
         Do
-            If Password <> "" Then MsgBox("Your passwords did not match")
+            If LoopCheck Then MsgBox("Your passwords did not match")
             Do
                 Password = InputBox("Please choose a password")
+                If Password = "" Then Exit Sub
             Loop Until ValidatePassword(Password)
-        Loop Until InputBox("Please confirm your password") = Password
+            LoopCheck = True
+            ConfirmedPassword = InputBox("Please confirm your password")
+            If ConfirmedPassword = "" Then Exit Sub
+        Loop Until ConfirmedPassword = Password
         If IsTeacher = False Then TeacherID = InputBox("Please enter your teacher's ID")
+        If TeacherID = "" Then Exit Sub
         MakeAccount(AccountID, FirstName, Surname, Password, IsTeacher, TeacherID)
         MainMenu.LogIn(AccountID, IsTeacher)
         MainMenu.Show()
